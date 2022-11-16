@@ -3,7 +3,7 @@ import './App.css';
 export default class App extends Component {
   state = {
     id : "",
-    returnId : "",
+    testbody : "",
   }
   
   handleChange = (e) => {
@@ -12,10 +12,11 @@ export default class App extends Component {
     });
   }
 
-  submitId = () => {
+  submit = () => {
     const post = {
-      plzid : this.state.id,
-    }
+      test : this.state.id,
+    };
+
     fetch("http://localhost:3001/idplz", {
       method: "post",
       headers: {
@@ -26,7 +27,7 @@ export default class App extends Component {
     .then((res) => res.json())
     .then((json) => {
       this.setState({
-        returnId : json.text,
+        testbody : json.text,
       });
     });
   };
@@ -35,8 +36,8 @@ export default class App extends Component {
     return (
       <div>
         <input onChange={this.handleChange} name = "id"/>
-        <button onClick = {this.submitId}>Submit</button>
-        <h1>{this.state.returnId}</h1>
+        <button onClick = {this.submit}>Submit</button>
+        <h1>{this.state.testbody}</h1>
       </div>
     )
   }
