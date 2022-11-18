@@ -23,12 +23,6 @@ app.get('/', (req, res) => {
 });
 
 app.post("/idplz", (req, res) => {
-    //const serverid = req.body.plzid;
-    //console.log(serverid);
-    // const sendText = {
-    //     text : serverid,
-    // }
-    // res.send(sendText);
     const test = req.body.test;
     connection.query("INSERT INTO test (test_body) values (?)",
     [test],
@@ -36,7 +30,24 @@ app.post("/idplz", (req, res) => {
         if(err){
             console.log("실패");
         } else {
-            console.log("성공");
+            console.log("성공 : "+test);
+            const sendText = {
+                text : test,
+            }
+            res.send(sendText);
+        }
+    });
+});
+
+app.post("/getdata", (req, res)=> {
+    connection.query("select * from test",
+    function(err,rows,fields){
+        if(err){
+            console.log("데이터 가져오기 실패");
+        } else {
+            console.log("데이터 가져오기 성공");
+            console.log(rows);
+            res.send(rows);
         }
     });
 });
