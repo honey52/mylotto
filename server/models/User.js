@@ -66,3 +66,34 @@ userSchema.methods.comparePassword = (plainPassword, cb) => {
     });
 };
 
+userSchema.methods.generateToken = (cb) => {
+    var user = this;
+    //jsonwebToken을 이용하여 토큰 생성 user._id는 mongo id
+    //user._id + 'secretToken' = token
+    //jwt.sign(payload, secretKey)이 기대값
+    //user._id는 문자열이 아니기 때문에 .toHexString으로 24파이트 16진수 문자열로 바꿔줌
+    var token = jwt.sign(user._id.toHexString(), "secretToken");
+    user.token = token;
+    user.save(function (err, user) {
+        if(err) return cb(err);
+        cb(null, user);
+    });
+};
+
+userSchema.statics.findByToken = function (token, cb) {
+    var user = this;
+
+    //token decode
+    jwt.verify(token, "secretToken", function (err, decoded) {
+        //유저 아이디를 이용해서 유저를 찾은 다음에
+        //클라이언트에서 가져온 토큰과 디비에 보관된 토큰이 일치하는지 확인
+        user.findOne({_id: decoded, token: token}, function (err, user) {
+            if (err) return cb(err);
+            cb(null, user);
+        });
+    });
+};
+
+const User = mongoose.model("User", userSchema);
+
+module.exports = {User};
